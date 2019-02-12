@@ -69,7 +69,6 @@
 </template>
 
 <script>
-  import axios from '../../Custom-axion';
   export default {
     data () {
       return {
@@ -104,8 +103,7 @@
           terms: this.terms
         }
         console.log(formData);
-
-        axios.post('/signupNewUser?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:this.email, password:this.password, returnSecureToken:true}).then(res=>console.log(res)).catch(err=>console.log(err));
+        this.$store.dispatch('signup', formData); //Only for Authentication
       }
     }
   }

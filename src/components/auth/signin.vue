@@ -25,7 +25,7 @@
 </template>
 
 <script>
-  import axios from '../../Custom-axion';
+ // import axios from '../../Custom-axion';
   export default {
     data () {
       return {
@@ -35,10 +35,12 @@
     },
     methods: {
       onSubmit () {
-
+        const formData = {
+          email: this.email,
+          password: this.password,
+        }
         //console.log(formData);
-
-        axios.post('/verifyPassword?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:this.email, password:this.password, returnSecureToken:true}).then(res=>console.log(res)).catch(err=>console.log(err));
+        this.$store.dispatch('login', {email:formData.email, password:formData.password});
       }
     }
   }

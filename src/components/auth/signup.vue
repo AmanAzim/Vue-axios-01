@@ -105,7 +105,7 @@
         }
         console.log(formData);
 
-        axios.post('/userData.json', formData).then(res=>console.log(res)).catch(err=>console.log(err));
+        axios.post('/signupNewUser?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:this.email, password:this.password, returnSecureToken:true}).then(res=>console.log(res)).catch(err=>console.log(err));
       }
     }
   }

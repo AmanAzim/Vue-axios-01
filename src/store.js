@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import authAxios from './Custom-axion'; //the REST API of firebase for authentication
 import globalAxios from 'axios'; // the URL in the main.js file
+import router from './router'
 
 Vue.use(Vuex)
 
@@ -18,6 +19,10 @@ export default new Vuex.Store({
     },
     storeUser(state, user){
       state.user=user;
+    },
+    clearAuthData(state){
+      state.idToken=null;
+      state.userId=null;
     }
   },
 
@@ -68,6 +73,11 @@ export default new Vuex.Store({
             //this.email=users[0].email;
             commit('storeUser', users[0]);
           }).catch(err=>console.log(err));
+    },
+
+    logout({commit}){
+      commit('clearAuthData');
+      router.replace('/signin');
     }
   },
   getters: {

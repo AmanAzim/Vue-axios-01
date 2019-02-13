@@ -31,20 +31,53 @@ export default new Vuex.Store({
       authAxios.post('/signupNewUser?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:authData.email, password:authData.password, returnSecureToken:true})
           .then(res=>{
             console.log(res);
-            commit('authUser', {token:res.data.idToken, userId:res.data.localId}); //first authenticate
-            dispatch('storeUser', authData); //then save all the data in the normal database
+            commit('authUser', {token:res.data.idToken, userId:res.data.localId}); //first saves authentication data
+
+              const now=new Date();
+              const expirationDate=new Date(now.getTime()+res.data.expiresIn*1000); //convert the expireId into miliseconds of date time. Means we will store the date in when we got he expirationId plus the expiration time by converting them into milliseconds
+
+              localStorage.setItem('expireDate', expirationDate);
+              localStorage.setItem('idToken', res.data.idToken); //storing the idToken in the browser's storage so it don't get lost in page reload
+              localStorage.setItem('userId', res.data.localId);
+
+            dispatch('storeUser', authData); //then save all the data in the normal database by sending it with saved authintication data
+
+            dispatch('setLogoutTimer', res.data.expiresIn);  //for auto logout
           }).catch(err=>console.log(err));
     },
 
-    login({commit}, authData){
+    login({commit, dispatch}, authData){
       authAxios.post('/verifyPassword?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:authData.email, password:authData.password, returnSecureToken:true})
           .then(res=>{
             console.log(res);
             commit('authUser', {token:res.data.idToken, userId:res.data.localId});
+
+              const now=new Date();
+              const expirationDate=new Date(now.getTime()+res.data.expiresIn*1000); //convert the expireId into miliseconds of date time. Means we will store the date in when we got he expirationId plus the expiration time by converting them into milliseconds
+
+              localStorage.setItem('expireDate', expirationDate);
+              localStorage.setItem('idToken', res.data.idToken); //storing the idToken in the browser's storage so it don't get lost in page reload
+              localStorage.setItem('userId', res.data.localId);
+
+            dispatch('setLogoutTimer', res.data.expiresIn);
           }).catch(err=>console.log(err));
     },
 
+    tryAutologIn({commit}){
+        const token=localStorage.getItem('idToken');
+        if(!token){
+            return;
+        }
 
+        const expireDate=localStorage.getItem('expireDate');
+        const now=new Date();
+        if(now>=expireDate){
+            return;
+        }
+        const userId=localStorage.getItem('userId');
+
+        commit('authUser', {token:token, userId:userId});
+    },
 
     storeUser({commit, state}, formData){
       if(!state.idToken)
@@ -53,7 +86,6 @@ export default new Vuex.Store({
       }
       globalAxios.post('/userData.json'+'?auth='+state.idToken, formData).then(res=> console.log(res)).catch(err=>console.log(err));
     },
-
 
     fetchUser({commit, state}){
       if(!state.idToken)
@@ -77,7 +109,14 @@ export default new Vuex.Store({
 
     logout({commit}){
       commit('clearAuthData');
+        localStorage.removeItem('expireDate');
+        localStorage.removeItem('idToken');
+        localStorage.removeItem('userId');
       router.replace('/signin');
+    },
+
+    setLogoutTimer({commit, dispatch}, expirationTime){
+        setTimeout(()=>{dispatch('logout')}, expirationTime*1000);
     }
   },
   getters: {

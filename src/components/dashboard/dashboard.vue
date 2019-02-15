@@ -23,19 +23,27 @@
       </table>
     </div>
     <br><br>
-    <button class="btn btn-primary" v-on:click="deleteCurrentUserNormalData">Delete current user's normal Data</button>
-    <br><br>
     <button class="btn btn-primary" v-on:click="deleteCurrentUserAge">Delete current user's age</button>
+    <p>Add/Edit age of current user:</p>
+    <input type="number" v-model="age">
+    <button class="btn btn-primary" v-on:click="changeCurrentUserAge">Click to Add/Edit age</button>
+    <br><br>
+    <button class="btn btn-primary" v-on:click="deleteCurrentUserNormalData">Delete current user's normal Data</button>
     <br><br>
     <button class="btn btn-primary" v-on:click="deleteCurrentUserAuthData">Delete current user's Auth Data</button>
     <br><br>
-    <button class="btn btn-primary" v-on:click="deleteAllUsersNormalData">Delete all users normal Data</button>
+    <button class="btn btn-danger" v-on:click="deleteAllUsersNormalData">Delete all users normal Data</button>
   </div>
 </template>
 
 <script>
   import axios from 'axios';
   export default {
+    data(){
+      return{
+        age:''
+      }
+    },
     computed:{
       users(){
         //console.log("users:"+this.$store.getters.users[0]);
@@ -45,6 +53,9 @@
     methods:{
       deleteCurrentUserNormalData(){
           this.$store.dispatch('deleteCurrentUserNormalData');
+      },
+      changeCurrentUserAge(){
+          this.$store.dispatch('changeCurrentUserAge', this.age);
       },
       deleteCurrentUserAge(){
           this.$store.dispatch('deleteCurrentUserAge');

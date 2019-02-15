@@ -46,7 +46,9 @@ export default new Vuex.Store({
 
             dispatch('setLogoutTimer', res.data.expiresIn);  //for auto logout
           }).catch(err=>console.log(err));
+
       state.email=authData.email;
+      localStorage.setItem('Email', authData.email);
     },
 
     login({commit, dispatch, state}, authData){
@@ -61,10 +63,11 @@ export default new Vuex.Store({
               localStorage.setItem('expireDate', expirationDate);
               localStorage.setItem('idToken', res.data.idToken); //storing the idToken in the browser's storage so it don't get lost in page reload
               localStorage.setItem('userId', res.data.localId);
-
             dispatch('setLogoutTimer', res.data.expiresIn);
           }).catch(err=>console.log(err));
+
         state.email=authData.email;
+        localStorage.setItem('Email', authData.email);
     },
 
     tryAutologIn({commit}){
@@ -93,18 +96,38 @@ export default new Vuex.Store({
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
     deleteCurrentUserNormalData({commit, state}){
         const token=localStorage.getItem('idToken');
+        var Email=localStorage.getItem('Email');
         var id='';
-        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+state.email+'"').then(res=>{
+        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+Email+'"').then(res=>{
             console.log(res.data);
             id=Object.keys(res.data);
             console.log("id:"+id);
             globalAxios.delete('/userData/'+id+'.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
         });
     },
-    deleteCurrentUserAge(state){
+    changeCurrentUserAge({state}, newAge){
         const token=localStorage.getItem('idToken');
-        globalAxios.delete('/userData/'+"-LYiZH_93bGvA8gPJYRs"+"/age"+'.json'+'?auth='+token)
-            .then(res=> console.log(res)).catch(err=>console.log(err));
+        var Email=localStorage.getItem('Email');
+        var id='';
+        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+Email+'"').then(res=>{
+            console.log(res.data);
+            id=Object.keys(res.data);
+            console.log("id:"+id);
+            globalAxios.patch('/userData/'+id+'/'+'age/'+newAge+'/.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
+            //globalAxios.put('/userData/'+id+'/'+newAge+'/age'+'.json'+'?auth='+ token)
+        });
+    },
+    deleteCurrentUserAge({state}){
+        const token=localStorage.getItem('idToken');
+        var Email=localStorage.getItem('Email');
+        var id='';
+        console.log("email:"+Email);
+        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+Email+'"').then(res=>{
+            console.log(res.data);
+            id=Object.keys(res.data);
+            console.log("id:"+id);
+            globalAxios.delete('/userData/'+id+'/age'+'.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
+        });
     },
     deleteCurrentUserAuthData({dispatch, state}){
         const token=localStorage.getItem('idToken');
@@ -114,7 +137,7 @@ export default new Vuex.Store({
     },
 
     deleteAllUsersNormalData({commit, dispatch, state}){
-        globalAxios.delete('/userData.json/userId'+'?auth='+state.idToken).
+        globalAxios.delete('/userData.json'+'?auth='+state.idToken).
         then(res=> console.log(res)).catch(err=>console.log(err));
 
         dispatch('logout');
@@ -147,6 +170,7 @@ export default new Vuex.Store({
         localStorage.removeItem('expireDate');
         localStorage.removeItem('idToken');
         localStorage.removeItem('userId');
+        localStorage.removeItem('Email');
       router.replace('/signin');
     },
 

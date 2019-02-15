@@ -113,7 +113,8 @@ export default new Vuex.Store({
             console.log(res.data);
             id=Object.keys(res.data);
             console.log("id:"+id);
-            globalAxios.patch('/userData/'+id+'/'+'age/'+newAge+'/.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
+            globalAxios.put('/userData/'+id+'/age'+'.json'+'?auth='+token, newAge).then(res=> console.log(res)).catch(err=>console.log(err));
+            //globalAxios.put('/userData/'+id+'/age'+'.json'+'?auth='+token, {age:newAge})
             //globalAxios.put('/userData/'+id+'/'+newAge+'/age'+'.json'+'?auth='+ token)
         });
     },

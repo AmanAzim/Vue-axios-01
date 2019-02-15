@@ -90,8 +90,13 @@ export default new Vuex.Store({
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
     deleteCurrentUserNormalData({commit, state}){
         const token=localStorage.getItem('idToken');
-        globalAxios.delete('/userData/'+"-LYiZH_93bGvA8gPJYRs"+'.json'+'?auth='+ token)
-            .then(res=> console.log(res)).catch(err=>console.log(err));
+        var id='';
+        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+"test5@gmail.com"+'"').then(res=>{
+            console.log(res.data);
+            id=Object.keys(res.data);
+            console.log("id:"+id);
+            globalAxios.delete('/userData/'+id+'.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
+        });
     },
     deleteCurrentUserAge(state){
         const token=localStorage.getItem('idToken');

@@ -98,7 +98,7 @@
 
                  return axios.get('/userData.json?orderBy="email"&equalTo="'+val+'"')
                      .then(res=>{
-                         console.log(res);
+                         console.log(res.data);
                          return Object.keys(res.data).length===0;
                      })
 

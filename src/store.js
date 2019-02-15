@@ -11,7 +11,7 @@ export default new Vuex.Store({
     idToken:null,
     userId:null,
     user:null,
-    dataId:null
+    email:null
   },
   mutations: {
     authUser(state, userData){
@@ -24,11 +24,12 @@ export default new Vuex.Store({
     clearAuthData(state){
       state.idToken=null;
       state.userId=null;
+      state.email=null;
     }
   },
 
   actions: {
-    signup({commit, dispatch}, authData){
+    signup({commit, dispatch, state}, authData){
       authAxios.post('/signupNewUser?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:authData.email, password:authData.password, returnSecureToken:true})
           .then(res=>{
             console.log(res);
@@ -45,9 +46,10 @@ export default new Vuex.Store({
 
             dispatch('setLogoutTimer', res.data.expiresIn);  //for auto logout
           }).catch(err=>console.log(err));
+      state.email=authData.email;
     },
 
-    login({commit, dispatch}, authData){
+    login({commit, dispatch, state}, authData){
       authAxios.post('/verifyPassword?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {email:authData.email, password:authData.password, returnSecureToken:true})
           .then(res=>{
             console.log(res);
@@ -62,6 +64,7 @@ export default new Vuex.Store({
 
             dispatch('setLogoutTimer', res.data.expiresIn);
           }).catch(err=>console.log(err));
+        state.email=authData.email;
     },
 
     tryAutologIn({commit}){
@@ -91,7 +94,7 @@ export default new Vuex.Store({
     deleteCurrentUserNormalData({commit, state}){
         const token=localStorage.getItem('idToken');
         var id='';
-        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+"test5@gmail.com"+'"').then(res=>{
+        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+state.email+'"').then(res=>{
             console.log(res.data);
             id=Object.keys(res.data);
             console.log("id:"+id);

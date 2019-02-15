@@ -10,7 +10,8 @@ export default new Vuex.Store({
   state: {
     idToken:null,
     userId:null,
-    user:null
+    user:null,
+    dataId:null
   },
   mutations: {
     authUser(state, userData){
@@ -86,22 +87,31 @@ export default new Vuex.Store({
       }
       globalAxios.post('/userData.json'+'?auth='+state.idToken, formData).then(res=> console.log(res)).catch(err=>console.log(err));
     },
-
-    deleteUser({commit, state, dispatch}){
-        globalAxios.delete('/userData/'+"-LYiZH_93bGvA8gPJYRs"+"/age"+'.json'+'?auth='+state.idToken)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+    deleteCurrentUserNormalData({commit, state}){
+        const token=localStorage.getItem('idToken');
+        globalAxios.delete('/userData/'+"-LYiZH_93bGvA8gPJYRs"+'.json'+'?auth='+ token)
             .then(res=> console.log(res)).catch(err=>console.log(err));
-        authAxios.post('/userData/'+"-LYiZH_93bGvA8gPJYRs"+"/age"+'.json'+'?auth='+state.idToken).
-
+    },
+    deleteCurrentUserAge(state){
+        const token=localStorage.getItem('idToken');
+        globalAxios.delete('/userData/'+"-LYiZH_93bGvA8gPJYRs"+"/age"+'.json'+'?auth='+token)
+            .then(res=> console.log(res)).catch(err=>console.log(err));
+    },
+    deleteCurrentUserAuthData({dispatch, state}){
+        const token=localStorage.getItem('idToken');
+        authAxios.post('/deleteAccount?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', token)
+            .then(res=> console.log(res)).catch(err=>console.log(err));
         dispatch('logout');
     },
 
-    deleteAllUser({commit, dispatch}){
+    deleteAllUsersNormalData({commit, dispatch, state}){
         globalAxios.delete('/userData.json/userId'+'?auth='+state.idToken).
         then(res=> console.log(res)).catch(err=>console.log(err));
 
         dispatch('logout');
     },
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////
     fetchUser({commit, state}){
       if(!state.idToken)
       {
@@ -111,6 +121,7 @@ export default new Vuex.Store({
           .then(res=>{
             console.log(res);
             const data=res.data;
+              console.log(res.data);
             const users=[];
             for(let key in data){
               const user=data[key];

@@ -4,10 +4,13 @@
     <p>You should only get here if you're authenticated!</p>
     <p v-if="email">Email: {{email}}</p>
     <br><br>
-    <button class="btn btn-primary" v-on:click="deleteUser">Delete user</button>
-
+    <button class="btn btn-primary" v-on:click="deleteCurrentUserNormalData">Delete current user's normal Data</button>
     <br><br>
-    <button class="btn btn-primary" v-on:click="deleteAllUser">Delete all users</button>
+    <button class="btn btn-primary" v-on:click="deleteCurrentUserAge">Delete current user's age</button>
+    <br><br>
+    <button class="btn btn-primary" v-on:click="deleteCurrentUserAuthData">Delete current user's Auth Data</button>
+    <br><br>
+    <button class="btn btn-primary" v-on:click="deleteAllUsersNormalData">Delete all users normal Data</button>
   </div>
 </template>
 
@@ -20,11 +23,17 @@
       }
     },
     methods:{
-      deleteUser(){
-          this.$store.dispatch('deleteUser');
+      deleteCurrentUserNormalData(){
+          this.$store.dispatch('deleteCurrentUserNormalData');
       },
-      deleteAllUser(){
-          this.$store.dispatch('deleteAllUser');
+      deleteCurrentUserAge(){
+          this.$store.dispatch('deleteCurrentUserAge');
+      },
+      deleteCurrentUserAuthData(){
+          this.$store.dispatch('deleteCurrentUserAuthData');
+      },
+      deleteAllUsersNormalData(){
+          this.$store.dispatch('deleteAllUsersNormalData');
       }
     },
     created() {

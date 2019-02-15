@@ -10,7 +10,7 @@ export default new Vuex.Store({
   state: {
     idToken:null,
     userId:null,
-    user:null,
+    users:[],
     email:null
   },
   mutations: {
@@ -18,8 +18,8 @@ export default new Vuex.Store({
         state.idToken=userData.token;
         state.userId=userData.userId;
     },
-    storeUser(state, user){
-      state.user=user;
+    storeUser(state, users){
+      state.users=users;
     },
     clearAuthData(state){
       state.idToken=null;
@@ -137,7 +137,7 @@ export default new Vuex.Store({
               users.push(user);
             }
             //this.email=users[0].email;
-            commit('storeUser', users[0]);
+            commit('storeUser', users);
 
           }).catch(err=>console.log(err));
     },
@@ -155,8 +155,8 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    user(state){
-      return state.user;
+    users(state){
+      return state.users;
     },
     isAuthenticated(state){
       return state.idToken !== null;

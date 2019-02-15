@@ -2,7 +2,26 @@
   <div id="dashboard">
     <h1>That's the dashboard!</h1>
     <p>You should only get here if you're authenticated!</p>
-    <p v-if="email">Email: {{email}}</p>
+    <p>Users info:</p><hr><br><br>
+    <div class="container" v-for="(x, index) in users">
+      <p>User No. {{index}}:</p>
+      <table class="table" >
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Country</th>
+          </tr>
+        </thead>
+        <tbody class="table">
+          <tr>
+            <td>{{x.email}}</td>
+            <td> {{x.age}}</td>
+            <td>{{x.country}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <br><br>
     <button class="btn btn-primary" v-on:click="deleteCurrentUserNormalData">Delete current user's normal Data</button>
     <br><br>
@@ -18,8 +37,9 @@
   import axios from 'axios';
   export default {
     computed:{
-      email(){
-        return this.$store.getters.user?  this.$store.getters.user.email : false;
+      users(){
+        //console.log("users:"+this.$store.getters.users[0]);
+        return this.$store.getters.users?  this.$store.getters.users : false;
       }
     },
     methods:{

@@ -87,6 +87,21 @@ export default new Vuex.Store({
       globalAxios.post('/userData.json'+'?auth='+state.idToken, formData).then(res=> console.log(res)).catch(err=>console.log(err));
     },
 
+    deleteUser({commit, state, dispatch}){
+        globalAxios.delete('/userData/'+"-LYiZH_93bGvA8gPJYRs"+"/age"+'.json'+'?auth='+state.idToken)
+            .then(res=> console.log(res)).catch(err=>console.log(err));
+        authAxios.post('/userData/'+"-LYiZH_93bGvA8gPJYRs"+"/age"+'.json'+'?auth='+state.idToken).
+
+        dispatch('logout');
+    },
+
+    deleteAllUser({commit, dispatch}){
+        globalAxios.delete('/userData.json/userId'+'?auth='+state.idToken).
+        then(res=> console.log(res)).catch(err=>console.log(err));
+
+        dispatch('logout');
+    },
+
     fetchUser({commit, state}){
       if(!state.idToken)
       {
@@ -104,6 +119,7 @@ export default new Vuex.Store({
             }
             //this.email=users[0].email;
             commit('storeUser', users[0]);
+
           }).catch(err=>console.log(err));
     },
 

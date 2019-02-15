@@ -21,18 +21,20 @@
                    v-model.number="age">
            <p v-if="!$v.age.minVal">You have to be at least {{$v.age.$params.minVal.min}}</p>
          </div>
-         <div class="input">
+         <div class="input" :class="{invalid:$v.password.$error}">
            <label for="password">Password</label>
            <input
                    type="password"
                    id="password"
+                   v-on:blur="$v.password.$touch()"
                    v-model="password">
          </div>
-         <div class="input">
+         <div class="input" :class="{invalid:$v.confirmPassword.$error}">
            <label for="confirm-password">Confirm Password</label>
            <input
                    type="password"
                    id="confirm-password"
+                   v-on:blur="$v.confirmPassword.$touch()"
                    v-model="confirmPassword">
          </div>
          <div class="input">
@@ -48,25 +50,24 @@
            <h3>Add some Hobbies</h3>
            <button @click="onAddHobby" type="button">Add Hobby</button>
            <div class="hobby-list">
-             <div
-                     class="input"
-                     v-for="(hobbyInput, index) in hobbyInputs"
-                     :key="hobbyInput.id">
+             <div class="input" v-for="(hobbyInput, index) in hobbyInputs" :key="hobbyInput.id" :class="{invalid:$v.hobbyInputs.$each[index].$error}">
                <label :for="hobbyInput.id">Hobby #{{ index }}</label>
-               <input
-                       type="text"
-                       :id="hobbyInput.id"
-                       v-model="hobbyInput.value">
+               <input type="text"
+                      :id="hobbyInput.id"
+                      v-on:blur="$v.hobbyInputs.$each[index].value.$touch()"
+                      v-model="hobbyInput.value">
                <button @click="onDeleteHobby(hobbyInput.id)" type="button">X</button>
              </div>
+             <p v-if="!$v.hobbyInputs.minLen">You have to specify at least {{$v.hobbyInputs.$params.minLen.min}} hobies</p>
+             <p v-if="!$v.hobbyInputs.required">Please add a hobby</p>
            </div>
          </div>
-         <div class="input inline">
-           <input type="checkbox" id="terms" v-model="terms">
+         <div class="input inline" :class="{invalid: $v.terms.$invalid}">
+           <input type="checkbox" id="terms" v-model="terms" @change="$v.terms.$touch()">
            <label for="terms">Accept Terms of Use</label>
          </div>
          <div class="submit">
-           <button type="submit">Submit</button>
+           <button type="submit" v-bind:disabled="$v.$invalid">Submit</button>
          </div>
        </form>
      </div>
@@ -74,7 +75,8 @@
  </template>
 
  <script>
-   import {required, email, numeric, minValue} from 'vuelidate/lib/validators'
+   import axios from 'axios'
+   import {required, email, numeric, minValue, minLength, sameAs, requiredUnless} from 'vuelidate/lib/validators'
    export default {
      data () {
        return {
@@ -88,15 +90,46 @@
        }
      },
      validations:{  //available because of installing "Vuelidation"
-       email:{
-         required,
-         email
-       },
-       age:{
-         required,
-         numeric,
-         minVal:minValue(18)
-       }
+         email:{
+             required,
+             email,
+             unique:val=>{
+                 if(val==='') return true;
+
+                 return axios.get('/userData.json?orderBy="email"&equalTo="'+val+'"')
+                     .then(res=>{
+                         console.log(res);
+                         return Object.keys(res.data).length===0;
+                     })
+
+             }
+         },
+         age:{
+             required,
+             numeric,
+             minVal:minValue(18)
+         },
+         password:{
+             required,
+             minLen:minLength(6),
+         },
+         confirmPassword:{
+             sameAs:sameAs('password'),
+           // sameAs:sameAs(vm=>{return vm.password+"p"})
+         },
+         terms:{
+             required:requiredUnless(vm=>{return vm.country==='germany'})
+         },
+         hobbyInputs:{
+             required,
+             minLen:minLength(2),
+             $each:{
+                 value:{
+                     required,
+                     minLen:minLength(5)
+                 }
+             }
+         }
      },
      methods: {
        onAddHobby () {
@@ -173,11 +206,11 @@
      font: inherit;
    }
 
-   .input.invilad label{
+   .input.invalid label {
      color:red;
    }
 
-   .input.invalid input{
+   .input.invalid input {
      border:1px solid red;
      background-color: #ff8a7e;
    }

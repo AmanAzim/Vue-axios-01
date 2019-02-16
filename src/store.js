@@ -94,7 +94,8 @@ export default new Vuex.Store({
       globalAxios.post('/userData.json'+'?auth='+state.idToken, formData).then(res=> console.log(res)).catch(err=>console.log(err));
     },
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    deleteCurrentUserNormalData({commit, state}){
+
+    changeCurrentUserAgePut({state}, newAge){
         const token=localStorage.getItem('idToken');
         var Email=localStorage.getItem('Email');
         var id='';
@@ -102,10 +103,11 @@ export default new Vuex.Store({
             console.log(res.data);
             id=Object.keys(res.data);
             console.log("id:"+id);
-            globalAxios.delete('/userData/'+id+'.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
+            globalAxios.put('/userData/'+id+'/age'+'.json'+'?auth='+token, newAge)
+                .then(res=> console.log(res)).catch(err=>console.log(err));
         });
     },
-    changeCurrentUserAge({state}, newAge){
+    changeCurrentUserAgePatch({state}, newAge){
         const token=localStorage.getItem('idToken');
         var Email=localStorage.getItem('Email');
         var id='';
@@ -113,9 +115,8 @@ export default new Vuex.Store({
             console.log(res.data);
             id=Object.keys(res.data);
             console.log("id:"+id);
-            globalAxios.put('/userData/'+id+'/age'+'.json'+'?auth='+token, newAge).then(res=> console.log(res)).catch(err=>console.log(err));
-            //globalAxios.put('/userData/'+id+'/age'+'.json'+'?auth='+token, {age:newAge})
-            //globalAxios.put('/userData/'+id+'/'+newAge+'/age'+'.json'+'?auth='+ token)
+            globalAxios.patch('/userData/'+id+'/.json'+'?auth='+token, {age:newAge})
+                .then(res=> console.log(res)).catch(err=>console.log(err));
         });
     },
     deleteCurrentUserAge({state}){
@@ -127,12 +128,30 @@ export default new Vuex.Store({
             console.log(res.data);
             id=Object.keys(res.data);
             console.log("id:"+id);
-            globalAxios.delete('/userData/'+id+'/age'+'.json'+'?auth='+ token).then(res=> console.log(res)).catch(err=>console.log(err));
+            globalAxios.delete('/userData/'+id+'/age'+'.json'+'?auth='+ token).
+            then(res=> console.log(res)).catch(err=>console.log(err));
         });
+    },
+    deleteCurrentUserAccount({commit, state, dispatch}){
+        const token=localStorage.getItem('idToken');
+        var Email=localStorage.getItem('Email');
+        var id='';
+        ////for normal data
+        globalAxios.get('/userData.json?orderBy="email"&equalTo="'+Email+'"').then(res=>{
+            console.log(res.data);
+            id=Object.keys(res.data);
+            console.log("id:"+id);
+            globalAxios.delete('/userData/'+id+'.json'+'?auth='+ token)
+                .then(res=> console.log(res)).catch(err=>console.log(err));
+        });
+        ////for Auth data
+        authAxios.post('/deleteAccount?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {idToken:token})
+            .then(res=> console.log(res)).catch(err=>console.log(err));
+        dispatch('logout');
     },
     deleteCurrentUserAuthData({dispatch, state}){
         const token=localStorage.getItem('idToken');
-        authAxios.post('/deleteAccount?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', token)
+        authAxios.post('/deleteAccount?key=AIzaSyDgx-TqVIEcws5Yp3_R5sCH5V6j0HnZAEE', {idToken:token})
             .then(res=> console.log(res)).catch(err=>console.log(err));
         dispatch('logout');
     },

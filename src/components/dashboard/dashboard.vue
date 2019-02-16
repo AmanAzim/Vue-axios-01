@@ -2,9 +2,9 @@
   <div id="dashboard">
     <h1>That's the dashboard!</h1>
     <p>You should only get here if you're authenticated!</p>
-    <p>Users info:</p><hr><br><br>
+    <h3 style="color:black; text-align: center">Users info:</h3><hr><br><br>
     <div class="container" v-for="(x, index) in users">
-      <p>User No. {{index}}:</p>
+      <p style="color: blue"><b>User #{{index}}:</b></p>
       <table class="table" >
         <thead>
           <tr>
@@ -24,13 +24,14 @@
     </div>
     <br><br>
     <button class="btn btn-primary" v-on:click="deleteCurrentUserAge">Delete current user's age</button>
-    <p>Add/Edit age of current user:</p>
+    <br><br>
     <input type="number" v-model="age">
-    <button class="btn btn-primary" v-on:click="changeCurrentUserAge">Click to Add/Edit age</button>
+    <button class="btn btn-primary" v-on:click="changeCurrentUserAgePatch">Click to Add/replace age (PATCH())</button>
     <br><br>
-    <button class="btn btn-primary" v-on:click="deleteCurrentUserNormalData">Delete current user's normal Data</button>
+    <input type="number" v-model="age">
+    <button class="btn btn-primary" v-on:click="changeCurrentUserAgePut">Click to Add/Overwrite age (PUT())</button>
     <br><br>
-    <button class="btn btn-primary" v-on:click="deleteCurrentUserAuthData">Delete current user's Auth Data</button>
+    <button class="btn btn-primary" v-on:click="deleteCurrentUserAccount">Delete current user's Account(Normal+Auth Data)</button>
     <br><br>
     <button class="btn btn-danger" v-on:click="deleteAllUsersNormalData">Delete all users normal Data</button>
   </div>
@@ -51,17 +52,17 @@
       }
     },
     methods:{
-      deleteCurrentUserNormalData(){
-          this.$store.dispatch('deleteCurrentUserNormalData');
-      },
-      changeCurrentUserAge(){
-          this.$store.dispatch('changeCurrentUserAge', this.age);
-      },
       deleteCurrentUserAge(){
-          this.$store.dispatch('deleteCurrentUserAge');
+        this.$store.dispatch('deleteCurrentUserAge');
       },
-      deleteCurrentUserAuthData(){
-          this.$store.dispatch('deleteCurrentUserAuthData');
+      changeCurrentUserAgePatch(){
+          this.$store.dispatch('changeCurrentUserAgePatch', this.age);
+      },
+      changeCurrentUserAgePut(){
+        this.$store.dispatch('changeCurrentUserAgePut', this.age);
+      },
+      deleteCurrentUserAccount(){
+        this.$store.dispatch('deleteCurrentUserAccount');
       },
       deleteAllUsersNormalData(){
           this.$store.dispatch('deleteAllUsersNormalData');
